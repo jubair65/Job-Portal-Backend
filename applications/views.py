@@ -3,16 +3,16 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
-
 from jobs.models import Job
-
 from .models import Application
 from .serializers import ApplicationSerializer
+from accounts.permissions import IsCandidate, IsEmployer
+
 
 
 class ApplyToJobView(generics.CreateAPIView):
     serializer_class = ApplicationSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsCandidate]
 
     def create(self, request, *args, **kwargs):
         job = get_object_or_404(
@@ -43,17 +43,16 @@ class ApplyToJobView(generics.CreateAPIView):
 
 class MyApplicationsView(generics.ListAPIView):
     serializer_class = ApplicationSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsCandidate]
 
     def get_queryset(self):
         return Application.objects.filter(
             candidate=self.request.user
         )
 
-
 class JobApplicationsView(generics.ListAPIView):
     serializer_class = ApplicationSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsEmployer]
 
     def get_queryset(self):
         return Application.objects.filter(
