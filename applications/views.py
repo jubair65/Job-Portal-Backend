@@ -49,6 +49,8 @@ class MyApplicationsView(generics.ListAPIView):
     permission_classes = [IsCandidate]
 
     def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return Application.objects.none()
         return Application.objects.filter(
             candidate=self.request.user
         )
@@ -58,6 +60,8 @@ class JobApplicationsView(generics.ListAPIView):
     permission_classes = [IsEmployer]
 
     def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return Application.objects.none()
         return Application.objects.filter(
             job__employer=self.request.user
         )
@@ -69,6 +73,9 @@ class ApplicationStatusUpdateView(generics.UpdateAPIView):
     http_method_names = ["patch"]
 
     def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return Application.objects.none()
         return Application.objects.filter(
             job__employer=self.request.user
-        )
+        )
+
