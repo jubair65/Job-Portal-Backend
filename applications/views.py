@@ -5,7 +5,10 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from jobs.models import Job
 from .models import Application
-from .serializers import ApplicationSerializer
+from .serializers import (
+    ApplicationSerializer,
+    ApplicationStatusSerializer,
+)
 from accounts.permissions import IsCandidate, IsEmployer
 
 
@@ -58,3 +61,14 @@ class JobApplicationsView(generics.ListAPIView):
         return Application.objects.filter(
             job__employer=self.request.user
         )
+
+
+class ApplicationStatusUpdateView(generics.UpdateAPIView):
+    serializer_class = ApplicationStatusSerializer
+    permission_classes = [IsEmployer]
+    http_method_names = ["patch"]
+
+    def get_queryset(self):
+        return Application.objects.filter(
+            job__employer=self.request.user
+        )
